@@ -554,11 +554,40 @@ jQuery.extend = jQuery.fn.extend = function() {
 	return target;
 };
 
-var expando = "jQuery" + now(), uuid = 0, windowData = {},
+var expando = "fakequery" + now(), uuid = 0, windowData = {},
  // exclude the following css properties to add px
  exclude = /z-?index|font-?weight|opacity|zoom|line-?height/i,
  // cache defaultView
  defaultView = {};
+
+// helpers for element uuids and identity. we store the uuid as a class.
+
+var uuidMatch = new RegExp('\\b' + expando + ':(\\d+)\\b');
+
+jQuery.extend({
+  uid: function(elem) {
+    var m = uuidMatch.exec(elem.getClassName());
+        
+    if (m) {
+      return parseInt(m[1]);
+    } else {
+      var id = ++uuid;
+      jQuery.className.add(elem, expando + ':' + id)
+      return id;
+    }
+  },
+  
+  removeUid: function(elem) {
+    var m = uuidMatch.exec(elem.getClassName().toString());
+    
+    if (m)
+      jQuery.className.remove(elem, m[0]);
+  },
+  
+  same: function(elem1, elem2) {
+    return jQuery.uid(elem1) == jQuery.uid(elem2);
+  }
+})
 
 jQuery.extend({
   // noConflict: function( deep ) {
@@ -615,12 +644,8 @@ jQuery.extend({
    //   windowData :
    //   elem;
   
-   var id = elem[ expando ];
-  
-   // Compute a unique ID for the element
-   if ( !id )
-     id = elem[ expando ] = ++uuid;
-  
+   var id = jQuery.uid(elem);
+    
    // Only generate the data cache if we're
    // trying to access or manipulate it
    if ( name && !jQuery.cache[ id ] )
@@ -641,7 +666,7 @@ jQuery.extend({
    //   windowData :
    //   elem;
   
-   var id = elem[ expando ];
+   var id = jQuery.uid(elem);
   
    // If we want to remove a specific section of the element's data
    if ( name ) {
@@ -660,16 +685,7 @@ jQuery.extend({
      }
   
    // Otherwise, we want to remove all of the element's data
-   } else {
-     // Clean up the element expando
-     try {
-       delete elem[ expando ];
-     } catch(e){
-       // IE has trouble directly removing the expando
-       // but it's ok with using removeAttribute
-       elem[ expando ] = null;
-     }
-  
+   } else {  
      // Completely remove the data cache
      delete jQuery.cache[ id ];
    }
@@ -727,7 +743,7 @@ jQuery.extend({
 		remove: function( elem, classNames ) {
 				elem.setClassName(classNames != undefined ?
 					jQuery.grep(elem.getClassName().split(/\s+/), function(className){
-						return !jQuery.className.has( classNames, className );
+						return !jQuery.inArray( className, classNames );
 					}).join(" ") :
 					"");
 		},
