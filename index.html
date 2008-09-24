@@ -1,0 +1,45 @@
+<script src="http://matt.seriousbusiness.com/test.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://matt.seriousbusiness.com/jquery/src/core.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://matt.seriousbusiness.com/jquery/src/selector.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://matt.seriousbusiness.com/jquery/src/fx.js" type="text/javascript" charset="utf-8"></script>
+<script src="htpp://matt.seriousbusiness.com/jquery/src/dimensions.js" type="text/javascript" charset="utf-8"></script>
+<script src="htpp://matt.seriousbusiness.com/jquery/src/offset.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="http://matt.seriousbusiness.com/jquery-1.2.6.js" type="text/javascript" charset="utf-8"></script>
+
+<style type="text/css" media="screen">
+</style>
+
+<form id="cool">
+  <select name="some_name" id="some_name" multiple onchange="" size="1">
+    <option value="option1">option1</option>
+    <option value="option2">option2</option>
+    
+  </select>
+</form>
+
+<div id="empty"></div>
+
+<div id="body">
+  <div class="section">
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    
+    <p class="special cool">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </div>
+  
+  <ul id="a_list" class="list super-list">
+    <li id="first">This<span>whoa</span></li>
+    <li class="really cool">is</li>
+    <li id="unique">a</li>
+    <li class="foo">list</li>
+  </ul>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+  jQuery('ul').click(function(){
+    console.log(jQuery('ul').offset())
+  })
+  // jQuery('*').slideUp(function(){jQuery(this).slideDown(function(){jQuery(this).fadeOut()})});
+</script>

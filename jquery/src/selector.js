@@ -1,5 +1,5 @@
-var chars = jQuery.browser.safari && parseInt(jQuery.browser.version) < 417 ?
-		"(?:[\\w*_-]|\\\\.)" :
+var chars = // jQuery.browser.safari && parseInt(jQuery.browser.version) < 417 ?
+		// "(?:[\\w*_-]|\\\\.)" :
 		"(?:[\\w\u0128-\uFFFF*_-]|\\\\.)",
 	quickChild = new RegExp("^>\\s*(" + chars + "+)"),
 	quickID = new RegExp("^(" + chars + "+)(#)(" + chars + "+)"),
@@ -8,7 +8,7 @@ var chars = jQuery.browser.safari && parseInt(jQuery.browser.version) < 417 ?
 jQuery.extend({
 	expr: {
 		"": function(a,i,m){return m[2]=="*"||jQuery.nodeName(a,m[2]);},
-		"#": function(a,i,m){return a.getAttribute("id")==m[2];},
+		"#": function(a,i,m){return a.getId()==m[2];},
 		":": {
 			// Position Checks
 			lt: function(a,i,m){return i<m[3]-0;},
@@ -21,44 +21,44 @@ jQuery.extend({
 			odd: function(a,i){return i%2;},
 
 			// Child Checks
-			"first-child": function(a){return a.parentNode.getElementsByTagName("*")[0]==a;},
-			"last-child": function(a){return jQuery.nth(a.parentNode.lastChild,1,"previousSibling")==a;},
-			"only-child": function(a){return !jQuery.nth(a.parentNode.lastChild,2,"previousSibling");},
+			"first-child": function(a){return !a.getPreviousSibling();},
+			"last-child": function(a){return !a.getNextSibling();},
+			"only-child": function(a){return a.getParentNode().getChildNodes().length==1;},
 
 			// Parent Checks
-			parent: function(a){return a.firstChild;},
-			empty: function(a){return !a.firstChild;},
+			parent: function(a){return a.getFirstChild();},
+			empty: function(a){return !a.getFirstChild();},
 
 			// Text Check
-			contains: function(a,i,m){return (a.textContent||a.innerText||jQuery(a).text()||"").indexOf(m[3])>=0;},
+      // contains: function(a,i,m){return (a.textContent||a.innerText||jQuery(a).text()||"").indexOf(m[3])>=0;},
 
 			// Visibility
 			visible: function(a){return "hidden"!=a.type&&jQuery.css(a,"display")!="none"&&jQuery.css(a,"visibility")!="hidden";},
 			hidden: function(a){return "hidden"==a.type||jQuery.css(a,"display")=="none"||jQuery.css(a,"visibility")=="hidden";},
 
 			// Form attributes
-			enabled: function(a){return !a.disabled;},
-			disabled: function(a){return a.disabled;},
-			checked: function(a){return a.checked;},
-			selected: function(a){return a.selected||jQuery.attr(a,"selected");},
+			enabled: function(a){return !a.getDisabled();},
+			disabled: function(a){return a.getDisabled();},
+			checked: function(a){return a.getChecked();},
+			selected: function(a){return a.getSelected();},
 
 			// Form elements
-			text: function(a){return "text"==a.type;},
-			radio: function(a){return "radio"==a.type;},
-			checkbox: function(a){return "checkbox"==a.type;},
-			file: function(a){return "file"==a.type;},
-			password: function(a){return "password"==a.type;},
-			submit: function(a){return "submit"==a.type;},
-			image: function(a){return "image"==a.type;},
-			reset: function(a){return "reset"==a.type;},
-			button: function(a){return "button"==a.type||jQuery.nodeName(a,"button");},
-			input: function(a){return /input|select|textarea|button/i.test(a.nodeName);},
+			text: function(a){return "text"==a.getType();},
+			radio: function(a){return "radio"==a.getType();},
+			checkbox: function(a){return "checkbox"==a.getType();},
+			file: function(a){return "file"==a.getType();},
+			password: function(a){return "password"==a.getType();},
+			submit: function(a){return "submit"==a.getType();},
+			image: function(a){return "image"==a.getType();},
+			reset: function(a){return "reset"==a.getType();},
+			button: function(a){return "button"==a.getType()||jQuery.nodeName(a,"button");},
+			input: function(a){return /input|select|textarea|button/i.test(a.getTagName());},
 
 			// :has()
 			has: function(a,i,m){return jQuery.find(m[3],a).length;},
 
 			// :header
-			header: function(a){return /h\d/i.test(a.nodeName);},
+			header: function(a){return /h\d/i.test(a.getTagName());},
 
 			// :animated
 			animated: function(a){return jQuery.grep(jQuery.timers,function(fn){return a==fn.elem;}).length;}
@@ -96,11 +96,13 @@ jQuery.extend({
 			return [ t ];
 
 		// check to make sure context is a DOM element or a document
-		if ( context && context.nodeType != 1 && context.nodeType != 9)
-			return [ ];
+    // if ( context && context.nodeType != 1 && context.nodeType != 9)
+    //  return [ ];
 
 		// Set the correct context (if none is provided)
-		context = context || document;
+		if (context == null || context == document) {
+		  context = document.getRootElement();
+		}
 
 		// Initialize the search
 		var ret = [context], done = [], last, nodeName;
@@ -122,12 +124,13 @@ jQuery.extend({
 				m = re.exec(t);
 
 			if ( m ) {
+			  			  
 				nodeName = m[1].toUpperCase();
 
 				// Perform our own iteration and filter
 				for ( var i = 0; ret[i]; i++ )
-					for ( var c = ret[i].firstChild; c; c = c.nextSibling )
-						if ( c.nodeType == 1 && (nodeName == "*" || c.nodeName.toUpperCase() == nodeName) )
+					for ( var c = ret[i].getFirstChild(); c; c = c.getNextSibling() )
+						if ( nodeName == "*" || c.getTagName().toUpperCase() == nodeName )
 							r.push( c );
 
 				ret = r;
@@ -138,6 +141,7 @@ jQuery.extend({
 				re = /^([>+~])\s*(\w*)/i;
 
 				if ( (m = re.exec(t)) != null ) {
+				    			  
 					r = [];
 
 					var merge = {};
@@ -145,20 +149,19 @@ jQuery.extend({
 					m = m[1];
 
 					for ( var j = 0, rl = ret.length; j < rl; j++ ) {
-						var n = m == "~" || m == "+" ? ret[j].nextSibling : ret[j].firstChild;
-						for ( ; n; n = n.nextSibling )
-							if ( n.nodeType == 1 ) {
-								var id = jQuery.data(n);
+						var n = m == "~" || m == "+" ? ret[j].getNextSibling() : ret[j].getFirstChild();
+						for ( ; n; n = n.getNextSibling() ) {
+              var id = jQuery.data(n);
 
-								if ( m == "~" && merge[id] ) break;
+              if ( m == "~" && merge[id] ) break;
 
-								if (!nodeName || n.nodeName.toUpperCase() == nodeName ) {
-									if ( m == "~" ) merge[id] = true;
-									r.push( n );
-								}
+              if (!nodeName || n.getTagName().toUpperCase() == nodeName ) {
+                if ( m == "~" ) merge[id] = true;
+                r.push( n );
+              }
 
-								if ( m == "+" ) break;
-							}
+              if ( m == "+" ) break;
+            }
 					}
 
 					ret = r;
@@ -207,15 +210,15 @@ jQuery.extend({
 					var elem = ret[ret.length-1];
 
 					// Try to do a global search by ID, where we can
-					if ( m[1] == "#" && elem && elem.getElementById && !jQuery.isXMLDoc(elem) ) {
+					if ( m[1] == "#" && elem && elem.getElementById ) {
 						// Optimization for HTML document case
 						var oid = elem.getElementById(m[2]);
 
 						// Do a quick check for the existence of the actual ID attribute
 						// to avoid selecting by the name attribute in IE
 						// also check to insure id is a string to avoid selecting an element with the name of 'id' inside a form
-						if ( (jQuery.browser.msie||jQuery.browser.opera) && oid && typeof oid.id == "string" && oid.id != m[2] )
-							oid = jQuery('[@id="'+m[2]+'"]', elem)[0];
+            // if ( (jQuery.browser.msie||jQuery.browser.opera) && oid && typeof oid.id == "string" && oid.id != m[2] )
+            //  oid = jQuery('[@id="'+m[2]+'"]', elem)[0];
 
 						// Do a quick check for node name (where applicable) so
 						// that div#foo searches will be really fast
@@ -225,12 +228,27 @@ jQuery.extend({
 						for ( var i = 0; ret[i]; i++ ) {
 							// Grab the tag name being searched for
 							var tag = m[1] == "#" && m[3] ? m[3] : m[1] != "" || m[0] == "" ? "*" : m[2];
-
+							
 							// Handle IE7 being really dumb about <object>s
-							if ( tag == "*" && ret[i].nodeName.toLowerCase() == "object" )
+							if ( tag == "*" && ret[i].getTagName().toLowerCase() == "object" )
 								tag = "param";
+								
+              //TODO: move this to somewhere else or refactor...
+              var descendantsByTagName = function(elem, tag) {
+                tag = tag.toLowerCase();
+                var ret = [];
 
-							r = jQuery.merge( r, ret[i].getElementsByTagName( tag ));
+                jQuery.each(elem.getChildNodes(), function() {
+                  if (tag == '*' || tag == this.getTagName().toLowerCase())
+                    ret.push(this);
+
+                    jQuery.merge(ret, descendantsByTagName(this, tag));
+                });
+
+                return ret;
+              }
+
+							r = jQuery.merge( r, descendantsByTagName(ret[i], tag ));
 						}
 
 						// It's faster to filter by class and be done with it
@@ -243,7 +261,7 @@ jQuery.extend({
 
 							// Try to find the element with the ID
 							for ( var i = 0; r[i]; i++ )
-								if ( r[i].getAttribute("id") == m[2] ) {
+								if ( r[i].getId() == m[2] ) {
 									tmp = [ r[i] ];
 									break;
 								}
@@ -261,6 +279,7 @@ jQuery.extend({
 
 			// If a selector string still exists
 			if ( t ) {
+
 				// Attempt to filter it
 				var val = jQuery.filter(t,r);
 				ret = r = val.r;
@@ -287,7 +306,7 @@ jQuery.extend({
 		m = " " + m + " ";
 		var tmp = [];
 		for ( var i = 0; r[i]; i++ ) {
-			var pass = (" " + r[i].className + " ").indexOf( m ) >= 0;
+			var pass = (" " + r[i].getClassName() + " ").indexOf( m ) >= 0;
 			if ( !not && pass || not && !pass )
 				tmp.push( r[i] );
 		}
@@ -352,6 +371,7 @@ jQuery.extend({
 
 			// We can get a speed boost by handling nth-child here
 			} else if ( m[1] == ":" && m[2] == "nth-child" ) {
+			  console.log('nth child: ' + m[3])
 				var merge = {}, tmp = [],
 					// parse equations like 'even', 'odd', '5', '2n', '3n+2', '4n-1', '-n+6'
 					test = /(-?)(\d*)n((?:\+|-)?\d*)/.exec(
@@ -362,14 +382,13 @@ jQuery.extend({
 
 				// loop through all the elements left in the jQuery object
 				for ( var i = 0, rl = r.length; i < rl; i++ ) {
-					var node = r[i], parentNode = node.parentNode, id = jQuery.data(parentNode);
+					var node = r[i], parentNode = node.getParentNode(), id = jQuery.data(parentNode);
 
 					if ( !merge[id] ) {
 						var c = 1;
 
-						for ( var n = parentNode.firstChild; n; n = n.nextSibling )
-							if ( n.nodeType == 1 )
-								n.nodeIndex = c++;
+						for ( var n = parentNode.getFirstChild(); n; n = n.getNextSibling() )
+              n.nodeIndex = c++;
 
 						merge[id] = true;
 					}
@@ -390,15 +409,18 @@ jQuery.extend({
 
 			// Otherwise, find the expression to execute
 			} else {
+			  
 				var fn = jQuery.expr[ m[1] ];
+								
 				if ( typeof fn == "object" )
 					fn = fn[ m[2] ];
-
-				if ( typeof fn == "string" )
-					fn = eval("false||function(a,i){return " + fn + ";}");
+				
+        // if ( typeof fn == "string" )
+        //  fn = eval("false||function(a,i){return " + fn + ";}");
 
 				// Execute it against the current filter
 				r = jQuery.grep( r, function(elem, i){
+				  
 					return fn(elem, i, m, r);
 				}, not );
 			}
@@ -411,34 +433,39 @@ jQuery.extend({
 
 	dir: function( elem, dir ){
 		var matched = [],
-			cur = elem[dir];
-		while ( cur && cur != document ) {
-			if ( cur.nodeType == 1 )
-				matched.push( cur );
-			cur = cur[dir];
+			cur = elem[dir]();
+		while ( cur && cur != null ) {
+      matched.push( cur );
+			cur = cur[dir]();
 		}
 		return matched;
 	},
 
-	nth: function(cur,result,dir,elem){
-		result = result || 1;
-		var num = 0;
+  // unused in fakequery
+  // nth: function(cur,result,dir,elem){
+  //  result = result || 1;
+  //  var num = 0;
+  // 
+  //  for ( ; cur; cur = cur[dir]() )
+  //    if ( ++num == result )
+  //      break;
+  // 
+  //  return cur;
+  // },
+  
+  fqSibling: function( n ) {
+    return jQuery.merge(jQuery.dir(n, 'getPreviousSibling').reverse(), jQuery.dir(n, 'getNextSibling'));
+  },
 
-		for ( ; cur; cur = cur[dir] )
-			if ( cur.nodeType == 1 && ++num == result )
-				break;
-
-		return cur;
-	},
-
-	sibling: function( n, elem ) {
-		var r = [];
-
-		for ( ; n; n = n.nextSibling ) {
-			if ( n.nodeType == 1 && n != elem )
-				r.push( n );
-		}
-
-		return r;
-	}
+  // fails to exclude elem in fbjs
+  // sibling: function( n, elem ) {
+  //  var r = [];
+  // 
+  //  for ( ; n; n = n.getNextSibling() ) {
+  //    if ( n != elem )
+  //      r.push( n );
+  //  }
+  // 
+  //  return r;
+  // }
 });
