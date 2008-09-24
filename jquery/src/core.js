@@ -272,12 +272,9 @@ jQuery.fn = jQuery.prototype = {
        return this.cloneNode(true);
    });
   
-   // Need to set the expando to null on the cloned set if it exists
-   // removeData doesn't work here, IE removes it from the original as well
-   // this is primarily for IE but the data expando shouldn't be copied over in any browser
+   // Remove element uids from the cloned set.
    var clone = ret.find("*").andSelf().each(function(){
-     if ( this[ expando ] != undefined )
-       this[ expando ] = null;
+     jQuery.removeUid(this);
    });
   
    // Copy the events from the original to the clone
@@ -485,21 +482,6 @@ jQuery.fn = jQuery.prototype = {
 // Give the init function the jQuery prototype for later instantiation
 jQuery.fn.init.prototype = jQuery.fn;
 
-// function evalScript( i, elem ) {
-//  if ( elem.src )
-//    jQuery.ajax({
-//      url: elem.src,
-//      async: false,
-//      dataType: "script"
-//    });
-// 
-//  else
-//    jQuery.globalEval( elem.text || elem.textContent || elem.innerHTML || "" );
-// 
-//  if ( elem.parentNode )
-//    elem.parentNode.removeChild( elem );
-// }
-
 function now(){
 	return +new Date;
 }
@@ -609,29 +591,6 @@ jQuery.extend({
   isXMLDoc: function( elem ) {
    return false;
   },
-
-	// Evalulates a script in a global context
-  // globalEval: function( data ) {
-  //  data = jQuery.trim( data );
-  // 
-  //  if ( data ) {
-  //    // Inspired by code by Andrea Giammarchi
-  //    // http://webreflection.blogspot.com/2007/08/global-scope-evaluation-and-dom.html
-  //    var head = document.getElementsByTagName("head")[0] || document.documentElement,
-  //      script = document.createElement("script");
-  // 
-  //    script.type = "text/javascript";
-  //    if ( jQuery.browser.msie )
-  //      script.text = data;
-  //    else
-  //      script.appendChild( document.createTextNode( data ) );
-  // 
-  //    // Use insertBefore instead of appendChild  to circumvent an IE6 bug.
-  //    // This arises when a base node is used (#2709).
-  //    head.insertBefore( script, head.firstChild );
-  //    head.removeChild( script );
-  //  }
-  // },
 
   nodeName: function( elem, name ) {
    return elem.getTagName && elem.getTagName().toUpperCase() == name.toUpperCase();
