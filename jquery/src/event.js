@@ -13,8 +13,8 @@ jQuery.event = {
 
 		// For whatever reason, IE has trouble passing the window object
 		// around, causing it to be cloned in the process
-		if ( jQuery.browser.msie && elem.setInterval )
-			elem = window;
+    // if ( jQuery.browser.msie && elem.setInterval )
+    //  elem = window;
 
 		// Make sure that the function being executed has a unique ID
 		if ( !handler.guid )
@@ -41,7 +41,7 @@ jQuery.event = {
 				// Handle the second event of a trigger and when
 				// an event is called after a page has unloaded
 				if ( typeof jQuery != "undefined" && !jQuery.event.triggered )
-					return jQuery.event.handle.apply(arguments.callee.elem, arguments);
+					return jQuery.event.handle.apply(handle.elem, arguments);
 			});
 		// Add elem as a property of the handle function
 		// This is to prevent a memory leak with non-native
@@ -68,10 +68,7 @@ jQuery.event = {
 				// events handler returns false
 				if ( !jQuery.event.special[type] || jQuery.event.special[type].setup.call(elem) === false ) {
 					// Bind the global event handler to the element
-					if (elem.addEventListener)
-						elem.addEventListener(type, handle, false);
-					else if (elem.attachEvent)
-						elem.attachEvent("on" + type, handle);
+          elem.addEventListener(type, handle);
 				}
 			}
 
@@ -91,9 +88,6 @@ jQuery.event = {
 
 	// Detach an event or set of events from an element
 	remove: function(elem, types, handler) {
-		// don't do events on text and comment nodes
-		if ( elem.nodeType == 3 || elem.nodeType == 8 )
-			return;
 
 		var events = jQuery.data(elem, "events"), ret, index;
 
@@ -132,10 +126,7 @@ jQuery.event = {
 						for ( ret in events[type] ) break;
 						if ( !ret ) {
 							if ( !jQuery.event.special[type] || jQuery.event.special[type].teardown.call(elem) === false ) {
-								if (elem.removeEventListener)
-									elem.removeEventListener(type, jQuery.data(elem, "handle"), false);
-								else if (elem.detachEvent)
-									elem.detachEvent("on" + type, jQuery.data(elem, "handle"));
+								elem.removeEventListener(type, jQuery.data(elem, "handle"));
 							}
 							ret = null;
 							delete events[type];
@@ -168,13 +159,10 @@ jQuery.event = {
 		if ( !elem ) {
 			// Only trigger if we've ever bound an event for it
 			if ( this.global[type] )
-				jQuery("*").add([window, document]).trigger(type, data);
+				jQuery("*").trigger(type, data);
 
 		// Handle triggering a single element
 		} else {
-			// don't do events on text and comment nodes
-			if ( elem.nodeType == 3 || elem.nodeType == 8 )
-				return undefined;
 
 			var val, ret, fn = jQuery.isFunction( elem[ type ] || null ),
 				// Check to see if we need to provide a fake event, or not
@@ -189,7 +177,7 @@ jQuery.event = {
 					stopPropagation: function(){},
 					timeStamp: now()
 				});
-				data[0][expando] = true; // no need to fix fake event
+        data[0][expando] = true; // no need to fix fake event
 			}
 
 			// Enforce the right trigger type
@@ -310,27 +298,27 @@ jQuery.event = {
 		event.timeStamp = event.timeStamp || now();
 
 		// Fix target property, if necessary
-		if ( !event.target )
-			event.target = event.srcElement || document; // Fixes #1925 where srcElement might not be defined either
+    // if ( !event.target )
+    //  event.target = event.srcElement || document; // Fixes #1925 where srcElement might not be defined either
 
 		// check if target is a textnode (safari)
-		if ( event.target.nodeType == 3 )
-			event.target = event.target.parentNode;
+    // if ( event.target.nodeType == 3 )
+    //  event.target = event.target.parentNode;
 
 		// Add relatedTarget, if necessary
 		if ( !event.relatedTarget && event.fromElement )
 			event.relatedTarget = event.fromElement == event.target ? event.toElement : event.fromElement;
 
 		// Calculate pageX/Y if missing and clientX/Y available
-		if ( event.pageX == null && event.clientX != null ) {
-			var doc = document.documentElement, body = document.body;
-			event.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc.clientLeft || 0);
-			event.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc.clientTop || 0);
-		}
+    // if ( event.pageX == null && event.clientX != null ) {
+    //  var doc = document.documentElement, body = document.body;
+    //  event.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc.clientLeft || 0);
+    //  event.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc.clientTop || 0);
+    // }
 
 		// Add which for key events
-		if ( !event.which && ((event.charCode || event.charCode === 0) ? event.charCode : event.keyCode) )
-			event.which = event.charCode || event.keyCode;
+		if ( !event.which && event.keyCode )
+			event.which = event.keyCode;
 
 		// Add metaKey to non-Mac browsers (use ctrl for PC's and Meta for Macs)
 		if ( !event.metaKey && event.ctrlKey )
@@ -362,49 +350,49 @@ jQuery.event = {
 			teardown: function() { return; }
 		},
 
-		mouseenter: {
-			setup: function() {
-				if ( jQuery.browser.msie ) return false;
-				jQuery(this).bind("mouseover", jQuery.event.special.mouseenter.handler);
-				return true;
-			},
-
-			teardown: function() {
-				if ( jQuery.browser.msie ) return false;
-				jQuery(this).unbind("mouseover", jQuery.event.special.mouseenter.handler);
-				return true;
-			},
-
-			handler: function(event) {
-				// If we actually just moused on to a sub-element, ignore it
-				if ( withinElement(event, this) ) return true;
-				// Execute the right handlers by setting the event type to mouseenter
-				event.type = "mouseenter";
-				return jQuery.event.handle.apply(this, arguments);
-			}
-		},
-
-		mouseleave: {
-			setup: function() {
-				if ( jQuery.browser.msie ) return false;
-				jQuery(this).bind("mouseout", jQuery.event.special.mouseleave.handler);
-				return true;
-			},
-
-			teardown: function() {
-				if ( jQuery.browser.msie ) return false;
-				jQuery(this).unbind("mouseout", jQuery.event.special.mouseleave.handler);
-				return true;
-			},
-
-			handler: function(event) {
-				// If we actually just moused on to a sub-element, ignore it
-				if ( withinElement(event, this) ) return true;
-				// Execute the right handlers by setting the event type to mouseleave
-				event.type = "mouseleave";
-				return jQuery.event.handle.apply(this, arguments);
-			}
-		}
+    // mouseenter: {
+    //  setup: function() {
+    //    if ( jQuery.browser.msie ) return false;
+    //    jQuery(this).bind("mouseover", jQuery.event.special.mouseenter.handler);
+    //    return true;
+    //  },
+    // 
+    //  teardown: function() {
+    //    if ( jQuery.browser.msie ) return false;
+    //    jQuery(this).unbind("mouseover", jQuery.event.special.mouseenter.handler);
+    //    return true;
+    //  },
+    // 
+    //  handler: function(event) {
+    //    // If we actually just moused on to a sub-element, ignore it
+    //    if ( withinElement(event, this) ) return true;
+    //    // Execute the right handlers by setting the event type to mouseenter
+    //    event.type = "mouseenter";
+    //    return jQuery.event.handle.apply(this, arguments);
+    //  }
+    // },
+    // 
+    // mouseleave: {
+    //  setup: function() {
+    //    if ( jQuery.browser.msie ) return false;
+    //    jQuery(this).bind("mouseout", jQuery.event.special.mouseleave.handler);
+    //    return true;
+    //  },
+    // 
+    //  teardown: function() {
+    //    if ( jQuery.browser.msie ) return false;
+    //    jQuery(this).unbind("mouseout", jQuery.event.special.mouseleave.handler);
+    //    return true;
+    //  },
+    // 
+    //  handler: function(event) {
+    //    // If we actually just moused on to a sub-element, ignore it
+    //    if ( withinElement(event, this) ) return true;
+    //    // Execute the right handlers by setting the event type to mouseleave
+    //    event.type = "mouseleave";
+    //    return jQuery.event.handle.apply(this, arguments);
+    //  }
+    // }
 	}
 };
 
@@ -461,9 +449,9 @@ jQuery.fn.extend({
 		}));
 	},
 
-	hover: function(fnOver, fnOut) {
-		return this.bind('mouseenter', fnOver).bind('mouseleave', fnOut);
-	},
+  // hover: function(fnOver, fnOut) {
+  //  return this.bind('mouseenter', fnOver).bind('mouseleave', fnOut);
+  // },
 
 	ready: function(fn) {
 		// Attach the listeners
@@ -512,65 +500,65 @@ jQuery.extend({
 
 var readyBound = false;
 
-function bindReady(){
-	if ( readyBound ) return;
-	readyBound = true;
-
-	// Mozilla, Opera (see further below for it) and webkit nightlies currently support this event
-	if ( document.addEventListener && !jQuery.browser.opera)
-		// Use the handy event callback
-		document.addEventListener( "DOMContentLoaded", jQuery.ready, false );
-
-	// If IE is used and is not in a frame
-	// Continually check to see if the document is ready
-	if ( jQuery.browser.msie && window == top ) (function(){
-		if (jQuery.isReady) return;
-		try {
-			// If IE is used, use the trick by Diego Perini
-			// http://javascript.nwbox.com/IEContentLoaded/
-			document.documentElement.doScroll("left");
-		} catch( error ) {
-			setTimeout( arguments.callee, 0 );
-			return;
-		}
-		// and execute any waiting functions
-		jQuery.ready();
-	})();
-
-	if ( jQuery.browser.opera )
-		document.addEventListener( "DOMContentLoaded", function () {
-			if (jQuery.isReady) return;
-			for (var i = 0; i < document.styleSheets.length; i++)
-				if (document.styleSheets[i].disabled) {
-					setTimeout( arguments.callee, 0 );
-					return;
-				}
-			// and execute any waiting functions
-			jQuery.ready();
-		}, false);
-
-	if ( jQuery.browser.safari ) {
-		var numStyles;
-		(function(){
-			if (jQuery.isReady) return;
-			if ( document.readyState != "loaded" && document.readyState != "complete" ) {
-				setTimeout( arguments.callee, 0 );
-				return;
-			}
-			if ( numStyles === undefined )
-				numStyles = jQuery("style, link[rel=stylesheet]").length;
-			if ( document.styleSheets.length != numStyles ) {
-				setTimeout( arguments.callee, 0 );
-				return;
-			}
-			// and execute any waiting functions
-			jQuery.ready();
-		})();
-	}
-
-	// A fallback to window.onload, that will always work
-	jQuery.event.add( window, "load", jQuery.ready );
-}
+// function bindReady(){
+//  if ( readyBound ) return;
+//  readyBound = true;
+// 
+//  // Mozilla, Opera (see further below for it) and webkit nightlies currently support this event
+//  if ( document.addEventListener && !jQuery.browser.opera)
+//    // Use the handy event callback
+//    document.addEventListener( "DOMContentLoaded", jQuery.ready, false );
+// 
+//  // If IE is used and is not in a frame
+//  // Continually check to see if the document is ready
+//  if ( jQuery.browser.msie && window == top ) (function(){
+//    if (jQuery.isReady) return;
+//    try {
+//      // If IE is used, use the trick by Diego Perini
+//      // http://javascript.nwbox.com/IEContentLoaded/
+//      document.documentElement.doScroll("left");
+//    } catch( error ) {
+//      setTimeout( arguments.callee, 0 );
+//      return;
+//    }
+//    // and execute any waiting functions
+//    jQuery.ready();
+//  })();
+// 
+//  if ( jQuery.browser.opera )
+//    document.addEventListener( "DOMContentLoaded", function () {
+//      if (jQuery.isReady) return;
+//      for (var i = 0; i < document.styleSheets.length; i++)
+//        if (document.styleSheets[i].disabled) {
+//          setTimeout( arguments.callee, 0 );
+//          return;
+//        }
+//      // and execute any waiting functions
+//      jQuery.ready();
+//    }, false);
+// 
+//  if ( jQuery.browser.safari ) {
+//    var numStyles;
+//    (function(){
+//      if (jQuery.isReady) return;
+//      if ( document.readyState != "loaded" && document.readyState != "complete" ) {
+//        setTimeout( arguments.callee, 0 );
+//        return;
+//      }
+//      if ( numStyles === undefined )
+//        numStyles = jQuery("style, link[rel=stylesheet]").length;
+//      if ( document.styleSheets.length != numStyles ) {
+//        setTimeout( arguments.callee, 0 );
+//        return;
+//      }
+//      // and execute any waiting functions
+//      jQuery.ready();
+//    })();
+//  }
+// 
+//  // A fallback to window.onload, that will always work
+//  jQuery.event.add( window, "load", jQuery.ready );
+// }
 
 jQuery.each( ("blur,focus,load,resize,scroll,unload,click,dblclick," +
 	"mousedown,mouseup,mousemove,mouseover,mouseout,change,select," +
@@ -596,6 +584,8 @@ var withinElement = function(event, elem) {
 // Prevent memory leaks in IE
 // And prevent errors on refresh with events like mouseover in other browsers
 // Window isn't included so as not to unbind existing unload events
-jQuery(window).bind("unload", function() {
-	jQuery("*").add(document).unbind();
-});
+// TODO: see if this is an issue in facebook and find a workaround
+
+// jQuery(window).bind("unload", function() {
+//  jQuery("*").add(document).unbind();
+// });
