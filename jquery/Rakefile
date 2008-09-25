@@ -1,5 +1,8 @@
+DIST = 'dist'
+BUILD = 'build'
+SRC = 'src'
 
-directory "dist"
+directory DIST
 
 def concat_filelist(files, dest)
   File.open(dest, 'w') do |dest_fd|
@@ -19,8 +22,8 @@ namespace :build do
   task :min => :development do
     printf "minifying distribution files..."; $stdout.flush
     
-    %w(dist/fq-core.js dist/fq-extensions.js).each do |src|
-      system('java', '-jar', 'build/js.jar', 'build/build/min.js', src)
+    %w(fq-core.js fq-extensions.js).collect{|f| File.join(DIST, f)}.each do |src|
+      system('java', '-jar', File.join(BUILD, 'js.jar'), File.join(BUILD, 'build/min.js'), src)
     end
     
     puts 'done'
@@ -30,23 +33,23 @@ namespace :build do
   task :core => :dist do
     puts "building core"
     
-    files = %w(preamble.js intro.js core.js selector.js event.js outro.js).collect { |f| File.join("src", f) }
-    concat_filelist(files, "dist/fq-core.js")
+    files = %w(preamble.js intro.js core.js selector.js event.js outro.js).collect { |f| File.join(SRC, f) }
+    concat_filelist(files, File.join(DIST, "fq-core.js"))
   end
   
   desc "build fq extensions"
   task :extensions => :dist do
     puts 'building extensions'
     
-    # files = %w(preamble.js ext_intro.js ajax.js fx.js dimensions.js offset.js ext_outro.js).collect { |f| File.join("src", f) }
     # TODO: reenable ajax.js
-    files = %w(preamble.js ext_intro.js fx.js dimensions.js offset.js ext_outro.js).collect { |f| File.join("src", f) }
-    concat_filelist(files, "dist/fq-extensions.js")
+    files = %w(preamble.js ext_intro.js fx.js dimensions.js offset.js ext_outro.js).collect { |f| File.join(SRC, f) }
+    concat_filelist(files, File.join(DIST, "fq-extensions.js"))
   end
   
 end
 
 desc "cleans up all generated files"
 task :clean do
-  system('rm', '-rf', 'dist')
+  puts "removing distribution files"
+  system('rm', '-rf', DIST)
 end

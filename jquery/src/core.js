@@ -992,7 +992,7 @@ jQuery.each({
 	nextAll: function(elem){return jQuery.dir(elem,"getNextSibling");},
 	prevAll: function(elem){return jQuery.dir(elem,"getPreviousSibling");},
 	siblings: function(elem){return jQuery.fqSibling(elem);},
-	children: function(elem){return elem.childNodes();},
+	children: function(elem){return elem.getChildNodes();},
 	contents: function(elem){return jQuery.nodeName(elem,"iframe")?elem.contentDocument||elem.contentWindow.document:jQuery.makeArray(elem.getChildNodes());}
 }, function(name, fn){
 	jQuery.fn[ name ] = function( selector ) {
