@@ -1,0 +1,45 @@
+
+directory "dist"
+
+def concat_filelist(files, dest)
+  File.open(dest, 'w') do |dest_fd|
+    dest_fd << files.collect { |f| File.read(f) }.join("\n")
+  end
+end
+
+desc "build minified and development fakequery fbjs files"
+task :build => ['build:development', 'build:min']
+
+namespace :build do
+  
+  desc "build development versions of fq core and fq extensions"
+  task :development => [:core, :extensions]
+  
+  desc "build minified versions of fq sources"
+  task :min => :development do
+    printf "minifying distribution files..."; $stdout.flush
+    
+    %w(dist/fq-core.js dist/fq-extensions.js).each do |src|
+      system('java', '-jar', 'build/js.jar', 'build/build/min.js', src)
+    end
+    
+    puts 'done'
+  end
+  
+  desc "build fq core"
+  task :core => :dist do
+    puts "building core"
+    
+    files = %w(preamble.js intro.js core.js selector.js event.js outro.js).collect { |f| File.join("src", f) }
+    concat_filelist(files, "dist/fq-core.js")
+  end
+  
+  desc "build fq extensions"
+  task :extensions => :dist do
+    puts 'building extensions'
+    
+    files = %w(preamble.js ext_intro.js ajax.js fx.js dimensions.js offset.js ext_outro.js).collect { |f| File.join("src", f) }
+    concat_filelist(files, "dist/fq-extensions.js")
+  end
+  
+end
