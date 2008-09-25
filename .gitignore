@@ -1,5 +1,5 @@
 /index.html
 .DS_Store
-/dist/*
-/docs/*
-/docs/**/*
+/jquery/dist/*
+/jquery/docs/*
+/jquery/docs/**/*
