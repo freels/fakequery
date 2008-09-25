@@ -45,3 +45,8 @@ namespace :build do
   end
   
 end
+
+desc "cleans up all generated files"
+task :clean do
+  system('rm', '-rf', 'dist')
+end
