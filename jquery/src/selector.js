@@ -246,7 +246,7 @@ jQuery.extend({
                 });
 
                 return ret;
-              }
+              };
 
 							r = jQuery.merge( r, descendantsByTagName(ret[i], tag ));
 						}
@@ -371,7 +371,6 @@ jQuery.extend({
 
 			// We can get a speed boost by handling nth-child here
 			} else if ( m[1] == ":" && m[2] == "nth-child" ) {
-			  console.log('nth child: ' + m[3])
 				var merge = {}, tmp = [],
 					// parse equations like 'even', 'odd', '5', '2n', '3n+2', '4n-1', '-n+6'
 					test = /(-?)(\d*)n((?:\+|-)?\d*)/.exec(

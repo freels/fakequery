@@ -120,7 +120,7 @@ jQuery.fn = jQuery.prototype = {
 	setArray: function( elems ) {
 		this.length = elems.length;
 		
-		for (var i = 0; i < elems.length; i++) this[i] = elems[i]
+		for (var i = 0; i < elems.length; i++) this[i] = elems[i];
 		
 		return this;
 	},
@@ -554,7 +554,7 @@ jQuery.extend({
       return parseInt(m[1]);
     } else {
       var id = ++uuid;
-      jQuery.className.add(elem, expando + ':' + id)
+      jQuery.className.add(elem, expando + ':' + id);
       return id;
     }
   },
@@ -569,7 +569,7 @@ jQuery.extend({
   same: function(elem1, elem2) {
     return jQuery.uid(elem1) == jQuery.uid(elem2);
   }
-})
+});
 
 jQuery.extend({
   // noConflict: function( deep ) {
@@ -982,7 +982,7 @@ jQuery.extend({
 		maxlength: "maxLength",
 		cellspacing: "cellSpacing"
 	}
-})
+});
 
 jQuery.each({
 	parent: function(elem){return elem.getParentNode();},

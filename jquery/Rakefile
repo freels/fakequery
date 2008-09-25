@@ -38,7 +38,9 @@ namespace :build do
   task :extensions => :dist do
     puts 'building extensions'
     
-    files = %w(preamble.js ext_intro.js ajax.js fx.js dimensions.js offset.js ext_outro.js).collect { |f| File.join("src", f) }
+    # files = %w(preamble.js ext_intro.js ajax.js fx.js dimensions.js offset.js ext_outro.js).collect { |f| File.join("src", f) }
+    # TODO: reenable ajax.js
+    files = %w(preamble.js ext_intro.js fx.js dimensions.js offset.js ext_outro.js).collect { |f| File.join("src", f) }
     concat_filelist(files, "dist/fq-extensions.js")
   end
   

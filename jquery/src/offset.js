@@ -109,8 +109,8 @@ jQuery.fn.extend({
 	position: function() {
 	  if (this[0])
 	    return {
-	      top: this[0].getOffsetTop();
-	      left: this[0].getOffsetLeft();
+	      top: this[0].getOffsetTop(),
+	      left: this[0].getOffsetLeft()
 	    }
     // var left = 0, top = 0, results;
     // 
