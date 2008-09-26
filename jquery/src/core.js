@@ -27,7 +27,6 @@ var quickExpr = /^[^<]*(<(.|\s)+>)[^>]*$|^#(\w+)$/,
 jQuery.fn = jQuery.prototype = {
 	init: function( selector, context ) {
 		// Make sure that a selection was provided
-		context = context || document.getRootElement();
 		selector = selector || document.getRootElement();
 
 		// Handle $(DOMElement)
