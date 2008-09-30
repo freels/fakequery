@@ -699,11 +699,11 @@ jQuery.extend({
 
 		// internal only, use removeClass("class")
 		remove: function( elem, classNames ) {
-				elem.setClassName(classNames != undefined ?
-					jQuery.grep(elem.getClassName().split(/\s+/), function(className){
-						return !jQuery.inArray( className, classNames );
-					}).join(" ") :
-					"");
+			elem.setClassName( classNames != undefined ?
+				jQuery.grep(elem.getClassName().split(/\s+/), function(className){
+				  return jQuery.inArray( className, classNames.split(/\s+/) ) == -1;
+				}).join(" ") :
+				"");
 		},
 
 		// internal only, use hasClass("class")
@@ -854,7 +854,7 @@ jQuery.extend({
   },
   
   attr: function( elem, name, value ) {
-    name = name.slice(0,1).toUpperCase() + name.slice(1).toLowerCase();
+    name = name.slice(0,1).toUpperCase() + name.slice(1);
     
     if ( !elem['get' + name] )
       return undefined;
