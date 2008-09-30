@@ -120,7 +120,7 @@ jQuery.fn.extend({
           
           opt.prev[key] = /height|width/.test(key) ? 
             jQuery(self)[key]() : 
-            self.getStyle(key) || (key == opacity ? 1 : 'auto');
+            self.getStyle(key) || (key == 'opacity' ? 1 : 'auto');
 
           a.hide();
         }
