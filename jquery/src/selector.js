@@ -454,7 +454,7 @@ jQuery.extend({
   
   fqSibling: function( n ) {
     return jQuery.merge(jQuery.dir(n, 'getPreviousSibling').reverse(), jQuery.dir(n, 'getNextSibling'));
-  },
+  }
 
   // fails to exclude elem in fbjs
   // sibling: function( n, elem ) {

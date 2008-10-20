@@ -140,7 +140,7 @@ jQuery.fn.extend({
     // }
     // 
     // return results;
-	},
+	}
 
   // offsetParent: function() {
   //  var offsetParent = this[0].offsetParent;
@@ -165,7 +165,7 @@ jQuery.fn.extend({
         this[0].setScrollTop(val);
       else
         this[0].getScrollTop();
-  },
+  }
 });
 
 

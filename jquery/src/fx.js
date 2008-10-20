@@ -160,7 +160,7 @@ jQuery.fn.extend({
 			// For JS strict compliance
 			return true;
 		});
-	},
+	}
 
   // queue: function(type, fn){
   //  if ( jQuery.isFunction(type) || ( type && typeof type != 'string' && type.slice )) {
@@ -278,6 +278,6 @@ jQuery.extend({
 	},
 
 	timers: [],
-	timerId: null,
+	timerId: null
 
 });

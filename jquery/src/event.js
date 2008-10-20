@@ -348,7 +348,7 @@ jQuery.event = {
 			},
 
 			teardown: function() { return; }
-		},
+		}
 
     // mouseenter: {
     //  setup: function() {
