@@ -369,7 +369,7 @@ jQuery.fn = jQuery.prototype = {
   
        // Everything else, we just grab the value
        } else
-         return (this[0].value || "").replace(/\r/g, "");
+         return (this[0].getValue() || "").replace(/\r/g, "");
   
      }
   
