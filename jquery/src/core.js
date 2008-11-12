@@ -1055,8 +1055,10 @@ jQuery.each({
 		jQuery( ">*", this ).remove();
 
 		// Remove any remaining nodes
-		while ( this.getFirstChild() )
-			this.removeChild( this.getFirstChild() );
+		this.setTextValue('');
+    // while ( this.getFirstChild() )
+    //  this.removeChild( this.getFirstChild() );
+			
 	}
 }, function(name, fn){
 	jQuery.fn[ name ] = function(){
