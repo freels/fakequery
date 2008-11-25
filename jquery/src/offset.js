@@ -109,8 +109,8 @@ jQuery.fn.extend({
 	position: function() {
 	  if (this[0])
 	    return {
-	      top: this[0].getOffsetTop(),
-	      left: this[0].getOffsetLeft()
+	      top: this[0].getAbsoluteTop() - this[0].getParentNode().getAbsoluteTop(),
+	      left: this[0].getAbsoluteLeft() - this[0].getParentNode().getAbsoluteLeft()
 	    }
     // var left = 0, top = 0, results;
     // 
@@ -142,12 +142,12 @@ jQuery.fn.extend({
     // return results;
 	}
 
-  // offsetParent: function() {
-  //  var offsetParent = this[0].offsetParent;
-  //  while ( offsetParent && (!/^body|html$/i.test(offsetParent.tagName) && jQuery.css(offsetParent, 'position') == 'static') )
-  //    offsetParent = offsetParent.offsetParent;
-  //  return jQuery(offsetParent);
-  // }
+  offsetParent: function() {
+   var offsetParent = this[0].getParentNode();
+   while ( offsetParent && (!/^body|html$/i.test(offsetParent.getTagName()) && jQuery.css(offsetParent, 'position') == 'static') )
+     offsetParent = offsetParent.getParentNode();
+   return jQuery(offsetParent);
+  }
 });
 
 jQuery.fn.extend({
