@@ -413,7 +413,11 @@ jQuery.fn = jQuery.prototype = {
   },
   
   slice: function(start, end) {
-   return this.pushStack( jQuery.makeArray(this).slice( start, end ) );
+    if (arguments.length > 1) {
+      return this.pushStack( jQuery.makeArray(this).slice( start, end ) );
+    } else {
+      return this.pushStack( jQuery.makeArray(this).slice( start ) );
+    }
   },
   
   map: function( callback ) {
